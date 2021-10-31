@@ -1,38 +1,35 @@
 import React, { Suspense, useRef, useState, useEffect } from "react";
-import * as THREE from "three";
+import { ReinhardToneMapping, Mesh, MeshStandardMaterial, Color } from "three";
 import { Canvas, useFrame } from "@react-three/fiber";
 import {
   Sky,
   useGLTF,
   OrbitControls,
   PerspectiveCamera,
-  useHelper,
   Environment,
   useProgress,
   Html,
 } from "@react-three/drei";
-import { ReinhardToneMapping, SpotLightHelper } from "three";
+import { HexColorPicker } from "react-colorful";
 
 const Loader = () => {
-  const { active, progress, errors, item, loaded, total } = useProgress();
+  const { progress } = useProgress();
   return <Html center>{progress.toFixed(0)} % loaded</Html>;
 };
 
 const Porsche = () => {
   const ref = useRef();
+  const [carColor, setCarColor] = useState("#ffffff");
   // Drei's useGLTF hook sets up draco automatically, that's how it differs from useLoader(GLTFLoader, url)
   // { nodes, materials } are extras that come from useLoader, these do not exist in threejs/GLTFLoader
   // nodes is a named collection of meshes, materials a named collection of materials
   const porscheObject = useGLTF("/models/porsche/scene.gltf");
   porscheObject.scene.children[0].traverse((n) => {
-    if (
-      n instanceof THREE.Mesh &&
-      n.material instanceof THREE.MeshStandardMaterial
-    ) {
+    if (n instanceof Mesh && n.material instanceof MeshStandardMaterial) {
       if (n.material.name === "paint") {
         n.material.roughness = 1;
         n.material.metalness = 0;
-        n.material.color = new THREE.Color("#ff0000");
+        n.material.color = new Color(carColor);
       }
 
       if (n.material.name === "930_tire") {
@@ -43,7 +40,7 @@ const Porsche = () => {
       if (n.material.name === "930_rim") {
         n.material.roughness = 0.5;
         n.material.metalness = 1;
-        n.material.color = new THREE.Color("#fff");
+        n.material.color = new Color("#fff");
       }
 
       if (n.material.name !== "glass") {
@@ -57,15 +54,24 @@ const Porsche = () => {
     }
   });
 
-  console.log(porscheObject);
+  console.log("porsche object", porscheObject);
   // Animate model
   // useFrame((state) => {
   //   const t = state.clock.getElapsedTime();
   //   ref.current.rotation.y = Math.sin(t / 4) / 8;
   // });
 
-  // Using the GLTFJSX output here to wire in app-state and hook up events
-  return <primitive ref={ref} object={porscheObject.scene.children[0]} />;
+  return (
+    <>
+      <primitive ref={ref} object={porscheObject.scene.children[0]} />
+      <Html>
+        <HexColorPicker
+          color={carColor}
+          onChange={(color) => setCarColor(color)}
+        />
+      </Html>
+    </>
+  );
 };
 
 const Camera = () => {
@@ -73,12 +79,12 @@ const Camera = () => {
 };
 
 const SpotLightComponent = ({ position = [-7, 3, -10] }) => {
-  const light = useRef();
-  useHelper(light, SpotLightHelper, "black");
+  // const light = useRef();
+  // useHelper(light, SpotLightHelper, "black");
 
   return (
     <spotLight
-      ref={light}
+      // ref={light}
       castShadow
       position={position}
       color={"0xffeb1"}
@@ -119,7 +125,7 @@ const Porsche3d = () => {
         <SpotLightComponent />
         <SpotLightComponent position={[7, 3, 10]} />
         <Suspense fallback={<Loader />}>
-          <Porsche />
+          <Porsche carColor={"#ff0000"} />
           <Environment preset="city" />
           {/* <ContactShadows
             rotation-x={Math.PI / 2}
@@ -139,7 +145,7 @@ const Porsche3d = () => {
           dampingFactor={0.05}
           minDistance={2}
           maxDistance={10}
-          enablePan={false}
+          enablePan={true}
         />
       </Canvas>
     </>
