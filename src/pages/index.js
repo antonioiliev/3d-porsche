@@ -9,8 +9,10 @@ import {
   Environment,
   useProgress,
   Html,
+  useContextBridge,
 } from "@react-three/drei";
 import { HexColorPicker } from "react-colorful";
+import { CarContext, useCarContext } from "../context/CarContext";
 
 const Loader = () => {
   const { progress } = useProgress();
@@ -18,8 +20,9 @@ const Loader = () => {
 };
 
 const Porsche = () => {
+  const { carColor } = useCarContext();
   const ref = useRef();
-  const [carColor, setCarColor] = useState("#ffffff");
+
   // Drei's useGLTF hook sets up draco automatically, that's how it differs from useLoader(GLTFLoader, url)
   // { nodes, materials } are extras that come from useLoader, these do not exist in threejs/GLTFLoader
   // nodes is a named collection of meshes, materials a named collection of materials
@@ -61,16 +64,19 @@ const Porsche = () => {
   //   ref.current.rotation.y = Math.sin(t / 4) / 8;
   // });
 
+  return <primitive ref={ref} object={porscheObject.scene.children[0]} />;
+};
+
+const ColorPicker = () => {
+  const { carColor, setCarColor } = useCarContext();
+
   return (
-    <>
-      <primitive ref={ref} object={porscheObject.scene.children[0]} />
-      <Html>
-        <HexColorPicker
-          color={carColor}
-          onChange={(color) => setCarColor(color)}
-        />
-      </Html>
-    </>
+    <div style={{ position: "fixed", top: "20px", left: "20px" }}>
+      <HexColorPicker
+        color={carColor}
+        onChange={(color) => setCarColor(color)}
+      />
+    </div>
   );
 };
 
@@ -99,6 +105,8 @@ const SpotLightComponent = ({ position = [-7, 3, -10] }) => {
 };
 
 const Porsche3d = () => {
+  const colorPickerRef = useRef();
+  const ContextBridge = useContextBridge(CarContext);
   return (
     <>
       <Canvas
@@ -109,25 +117,26 @@ const Porsche3d = () => {
           state.gl.toneMappingExposure = 2;
         }}
       >
-        <Camera />
-        <ambientLight color={"#fff"} intensity={0.5} />
-        <Sky
-          distance={450000}
-          sunPosition={[0, 2, 0]}
-          inclination={0}
-          azimuth={0.25}
-        />
-        {/* <hemisphereLight
+        <ContextBridge>
+          <Camera />
+          <ambientLight color={"#fff"} intensity={0.5} />
+          <Sky
+            distance={450000}
+            sunPosition={[0, 2, 0]}
+            inclination={0}
+            azimuth={0.25}
+          />
+          {/* <hemisphereLight
           skyColor={"0xffeb1"}
           groundColor={"0xffeb1"}
           intensity={0.1}
         /> */}
-        <SpotLightComponent />
-        <SpotLightComponent position={[7, 3, 10]} />
-        <Suspense fallback={<Loader />}>
-          <Porsche carColor={"#ff0000"} />
-          <Environment preset="city" />
-          {/* <ContactShadows
+          <SpotLightComponent />
+          <SpotLightComponent position={[7, 3, 10]} />
+          <Suspense fallback={<Loader />}>
+            <Porsche carColor={"#ff0000"} colorPickerRef={colorPickerRef} />
+            <Environment preset="city" />
+            {/* <ContactShadows
             rotation-x={Math.PI / 2}
             position={[0, -0.8, 0]}
             opacity={0.25}
@@ -136,18 +145,20 @@ const Porsche3d = () => {
             blur={1.5}
             far={0.8}
           /> */}
-        </Suspense>
-        <OrbitControls
-          minPolarAngle={Math.PI / 3}
-          maxPolarAngle={Math.PI / 2}
-          enableZoom={true}
-          enableDamping={true}
-          dampingFactor={0.05}
-          minDistance={2}
-          maxDistance={10}
-          enablePan={true}
-        />
+          </Suspense>
+          <OrbitControls
+            minPolarAngle={Math.PI / 3}
+            maxPolarAngle={Math.PI / 2}
+            enableZoom={true}
+            enableDamping={true}
+            dampingFactor={0.05}
+            minDistance={2}
+            maxDistance={10}
+            enablePan={true}
+          />
+        </ContextBridge>
       </Canvas>
+      <ColorPicker />
     </>
   );
 };

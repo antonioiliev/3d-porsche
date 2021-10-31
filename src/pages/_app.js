@@ -1,7 +1,12 @@
 import "../styles/globals.css";
+import CarContextProvider from "../context/CarContext";
 
-function MyApp({ Component, pageProps }) {
-  return <Component {...pageProps} />;
-}
+const PorscheConfiguratorApp = ({ Component, pageProps }) => {
+  return (
+    <CarContextProvider>
+      <Component {...pageProps} />
+    </CarContextProvider>
+  );
+};
 
-export default MyApp;
+export default PorscheConfiguratorApp;
