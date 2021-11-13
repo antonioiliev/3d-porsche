@@ -1,7 +1,7 @@
-import React, { Suspense, useRef, useState, useEffect } from "react";
-import { ReinhardToneMapping, Mesh, MeshStandardMaterial, Color } from "three";
-import "../utils/InfiniteGridHelper";
-import { Canvas, useFrame } from "@react-three/fiber";
+import React, { Suspense, useRef, useEffect } from 'react'
+import { ReinhardToneMapping, Mesh, MeshStandardMaterial, Color } from 'three'
+import '../utils/InfiniteGridHelper'
+import { Canvas, useFrame } from '@react-three/fiber'
 import {
   Sky,
   useGLTF,
@@ -11,93 +11,93 @@ import {
   useProgress,
   Html,
   useContextBridge,
-  AdaptiveDpr,
-} from "@react-three/drei";
-import { HexColorPicker } from "react-colorful";
-import { CarContext, useCarContext } from "../context/CarContext";
+  AdaptiveDpr
+} from '@react-three/drei'
+import { CarContext, useCarContext } from '../context/CarContext'
+import ColorPicker from '../components/ColorPicker'
 
 const Loader = () => {
-  const { setShowColorPicker } = useCarContext();
-  const { progress } = useProgress();
+  const { setShowColorPicker } = useCarContext()
+  const { progress } = useProgress()
 
   useEffect(() => {
-    return () => setShowColorPicker(true);
-  }, []);
+    return () => setShowColorPicker(true)
+  }, [])
 
-  return <Html center>{progress.toFixed(0)} % loaded</Html>;
-};
+  return <Html center>{progress.toFixed(0)} % loaded</Html>
+}
 
 const Porsche = ({ carRef }) => {
-  const { carColor } = useCarContext();
-  const frWheel = useRef();
-  const flWheel = useRef();
-  const rrWheel = useRef();
-  const rlWheel = useRef();
-  const gridHelperRef = useRef();
+  const { carColor } = useCarContext()
+  const frWheel = useRef()
+  const flWheel = useRef()
+  const rrWheel = useRef()
+  const rlWheel = useRef()
+  const gridHelperRef = useRef()
 
   // Drei's useGLTF hook sets up draco automatically, that's how it differs from useLoader(GLTfroader, url)
   // { nodes, materials } are extras that come from useLoader, these do not exist in threejs/GLTFLoader
   // nodes is a named collection of meshes, materials a named collection of materials
-  const porscheObject = useGLTF("/models/porsche/scene.gltf");
+  const porscheObject = useGLTF('/models/porsche/scene.gltf')
 
   porscheObject.nodes.root.children[0].traverse((n) => {
     if (n instanceof Mesh && n.material instanceof MeshStandardMaterial) {
-      n.castShadow = false;
-      n.receiveShadow = false;
+      n.castShadow = false
+      n.receiveShadow = false
     }
-  });
+  })
 
-  const frRim = porscheObject.nodes.mesh_5.clone();
-  const frTyre = porscheObject.nodes.mesh_6.clone();
+  const frRim = porscheObject.nodes.mesh_5.clone()
+  const frTyre = porscheObject.nodes.mesh_6.clone()
 
-  const flRim = porscheObject.nodes.mesh_47.clone();
-  const flTyre = porscheObject.nodes.mesh_48.clone();
+  const flRim = porscheObject.nodes.mesh_47.clone()
+  const flTyre = porscheObject.nodes.mesh_48.clone()
 
-  const rrRim = porscheObject.nodes.mesh_3.clone();
-  const rrTyre = porscheObject.nodes.mesh_4.clone();
+  const rrRim = porscheObject.nodes.mesh_3.clone()
+  const rrTyre = porscheObject.nodes.mesh_4.clone()
 
-  const rlRim = porscheObject.nodes.mesh_62.clone();
-  const rlTyre = porscheObject.nodes.mesh_63.clone();
+  const rlRim = porscheObject.nodes.mesh_62.clone()
+  const rlTyre = porscheObject.nodes.mesh_63.clone()
 
-  porscheObject.nodes.mesh_3.removeFromParent();
-  porscheObject.nodes.mesh_4.removeFromParent();
-  porscheObject.nodes.mesh_5.removeFromParent();
-  porscheObject.nodes.mesh_6.removeFromParent();
-  porscheObject.nodes.mesh_47.removeFromParent();
-  porscheObject.nodes.mesh_48.removeFromParent();
-  porscheObject.nodes.mesh_62.removeFromParent();
-  porscheObject.nodes.mesh_63.removeFromParent();
+  porscheObject.nodes.mesh_3.removeFromParent()
+  porscheObject.nodes.mesh_4.removeFromParent()
+  porscheObject.nodes.mesh_5.removeFromParent()
+  porscheObject.nodes.mesh_6.removeFromParent()
+  porscheObject.nodes.mesh_47.removeFromParent()
+  porscheObject.nodes.mesh_48.removeFromParent()
+  porscheObject.nodes.mesh_62.removeFromParent()
+  porscheObject.nodes.mesh_63.removeFromParent()
 
-  porscheObject.materials.paint.roughness = 1;
-  porscheObject.materials.paint.metalness = 0;
-  porscheObject.materials.paint.color = new Color(carColor);
+  porscheObject.materials.paint.roughness = 1
+  porscheObject.materials.paint.metalness = 0
+  porscheObject.materials.paint.color = new Color(carColor)
 
-  porscheObject.materials["930_tire"].roughness = 1;
-  porscheObject.materials["930_tire"].metalness = 0;
+  porscheObject.materials['930_tire'].roughness = 1
+  porscheObject.materials['930_tire'].metalness = 0
 
-  porscheObject.materials["930_rim"].roughness = 0.5;
-  porscheObject.materials["930_rim"].metalness = 1;
-  porscheObject.materials["930_rim"].color = new Color("#fff");
+  porscheObject.materials['930_rim'].roughness = 0.5
+  porscheObject.materials['930_rim'].metalness = 1
+  porscheObject.materials['930_rim'].color = new Color('#fff')
 
   // porscheObject.materials.glass.opacity = 0.5;
   // porscheObject.materials.glass.metalness = 1;
   // porscheObject.materials.glass.roughness = 1;
 
-  porscheObject.materials["930_lights_refraction"].opacity = 0.7;
-  porscheObject.materials["930_lights_refraction"].color = new Color("#424242");
+  porscheObject.materials['930_lights_refraction'].opacity = 0.7
+  porscheObject.materials['930_lights_refraction'].color = new Color('#424242')
 
   // Animate model
   useFrame((state) => {
     // console.log("state ", state.clock.getDelta());
-    const t = state.clock.getElapsedTime();
+    const t = state.clock.getElapsedTime()
     // ref.current.rotation.y = Math.sin(t / 4) / 8;
-    const rotationFactor = 1.9;
-    frWheel.current.rotation.x = t * rotationFactor;
-    flWheel.current.rotation.x = t * rotationFactor;
-    rrWheel.current.rotation.x = t * rotationFactor;
-    rlWheel.current.rotation.x = t * rotationFactor;
-    gridHelperRef.current.position.z = -t / 1.3;
-  });
+    const rotationFactor = 1.9
+    frWheel.current.rotation.x = t * rotationFactor
+    flWheel.current.rotation.x = t * rotationFactor
+    rrWheel.current.rotation.x = t * rotationFactor
+    rlWheel.current.rotation.x = t * rotationFactor
+    gridHelperRef.current.position.z = -t / 1.3
+  })
 
   return (
     <>
@@ -111,78 +111,31 @@ const Porsche = ({ carRef }) => {
             geometry={frRim.geometry}
             material={frRim.material}
           />
-          <mesh
-            receiveShadow
-            castShadow
-            geometry={frTyre.geometry}
-            material={frTyre.material}
-          />
+          <mesh receiveShadow castShadow geometry={frTyre.geometry} material={frTyre.material} />
         </group>
         <group ref={flWheel} position={[0.83, 0.45, 1.6]} scale={0.8}>
-          <mesh
-            receiveShadow
-            castShadow
-            geometry={flRim.geometry}
-            material={flRim.material}
-          />
-          <mesh
-            receiveShadow
-            castShadow
-            geometry={flTyre.geometry}
-            material={flTyre.material}
-          />
+          <mesh receiveShadow castShadow geometry={flRim.geometry} material={flRim.material} />
+          <mesh receiveShadow castShadow geometry={flTyre.geometry} material={flTyre.material} />
         </group>
 
         <group ref={rrWheel} position={[-0.95, 0.45, -1]} scale={0.8}>
-          <mesh
-            receiveShadow
-            castShadow
-            geometry={rrRim.geometry}
-            material={rrRim.material}
-          />
-          <mesh
-            receiveShadow
-            castShadow
-            geometry={rrTyre.geometry}
-            material={rrTyre.material}
-          />
+          <mesh receiveShadow castShadow geometry={rrRim.geometry} material={rrRim.material} />
+          <mesh receiveShadow castShadow geometry={rrTyre.geometry} material={rrTyre.material} />
         </group>
 
         <group ref={rlWheel} position={[0.95, 0.45, -1]} scale={0.8}>
-          <mesh
-            receiveShadow
-            castShadow
-            geometry={rlRim.geometry}
-            material={rlRim.material}
-          />
-          <mesh
-            receiveShadow
-            castShadow
-            geometry={rlTyre.geometry}
-            material={rlTyre.material}
-          />
+          <mesh receiveShadow castShadow geometry={rlRim.geometry} material={rlRim.material} />
+          <mesh receiveShadow castShadow geometry={rlTyre.geometry} material={rlTyre.material} />
         </group>
       </group>
       <infiniteGridHelper ref={gridHelperRef} />
     </>
-  );
-};
-
-const ColorPicker = () => {
-  const { carColor, setCarColor } = useCarContext();
-  return (
-    <div style={{ position: "fixed", top: "20px", left: "20px" }}>
-      <HexColorPicker
-        color={carColor}
-        onChange={(color) => setCarColor(color)}
-      />
-    </div>
-  );
-};
+  )
+}
 
 const Camera = () => {
-  return <PerspectiveCamera makeDefault position={[3, 2, 4]} fov={50} />;
-};
+  return <PerspectiveCamera makeDefault position={[3, 2, 4]} fov={50} />
+}
 
 const SpotLightComponent = ({ position = [-7, 3, -10] }) => {
   // const light = useRef();
@@ -193,7 +146,7 @@ const SpotLightComponent = ({ position = [-7, 3, -10] }) => {
       // ref={light}
       castShadow
       position={position}
-      color={"#fff"}
+      color={'#fff'}
       intensity={5}
       shadow-mapSize-height={1024}
       shadow-mapSize-width={1024}
@@ -201,13 +154,13 @@ const SpotLightComponent = ({ position = [-7, 3, -10] }) => {
       shadow-normalBias={0.03}
       power={7}
     />
-  );
-};
+  )
+}
 
 const Porsche3d = () => {
-  const { showColorPicker } = useCarContext();
-  const carRef = useRef();
-  const ContextBridge = useContextBridge(CarContext);
+  const { showColorPicker } = useCarContext()
+  const carRef = useRef()
+  const ContextBridge = useContextBridge(CarContext)
 
   return (
     <>
@@ -216,19 +169,14 @@ const Porsche3d = () => {
         dpr={[1, 2]}
         mode="concurrent"
         onCreated={(state) => {
-          state.gl.toneMapping = ReinhardToneMapping;
-          state.gl.toneMappingExposure = 2;
+          state.gl.toneMapping = ReinhardToneMapping
+          state.gl.toneMappingExposure = 2
         }}
       >
         <ContextBridge>
           <Camera far={2} />
           {/* <ambientLight color={"#fff"} intensity={0.5} /> */}
-          <Sky
-            distance={450000}
-            sunPosition={[0, 2, 0]}
-            inclination={0}
-            azimuth={0.25}
-          />
+          <Sky distance={450000} sunPosition={[0, 2, 0]} inclination={0} azimuth={0.25} />
           <SpotLightComponent />
           <SpotLightComponent position={[7, 3, 10]} />
           <Suspense fallback={<Loader />}>
@@ -259,7 +207,7 @@ const Porsche3d = () => {
       </Canvas>
       {showColorPicker && <ColorPicker />}
     </>
-  );
-};
+  )
+}
 
-export default Porsche3d;
+export default Porsche3d

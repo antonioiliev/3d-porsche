@@ -1,37 +1,37 @@
-import * as THREE from "three";
+import * as THREE from 'three'
 THREE.InfiniteGridHelper = function InfiniteGridHelper(
   size1,
   size2,
   color,
   distance,
-  axes = "xzy"
+  axes = 'xzy'
 ) {
-  color = color || new THREE.Color("lightgrey");
-  size1 = size1 || 10;
-  size2 = size2 || 100;
+  color = color || new THREE.Color('lightgrey')
+  size1 = size1 || 10
+  size2 = size2 || 100
 
-  distance = distance || 8;
+  distance = distance || 8
 
-  const planeAxes = axes.substr(0, 2);
+  const planeAxes = axes.substr(0, 2)
 
-  const geometry = new THREE.PlaneBufferGeometry(2, 2, 1, 1);
+  const geometry = new THREE.PlaneBufferGeometry(2, 2, 1, 1)
 
   const material = new THREE.ShaderMaterial({
     side: THREE.DoubleSide,
 
     uniforms: {
       uSize1: {
-        value: size1,
+        value: size1
       },
       uSize2: {
-        value: size2,
+        value: size2
       },
       uColor: {
-        value: color,
+        value: color
       },
       uDistance: {
-        value: distance,
-      },
+        value: distance
+      }
     },
     transparent: true,
     vertexShader: `
@@ -95,49 +95,49 @@ THREE.InfiniteGridHelper = function InfiniteGridHelper(
            `,
 
     extensions: {
-      derivatives: true,
-    },
-  });
+      derivatives: true
+    }
+  })
 
-  THREE.Mesh.call(this, geometry, material);
+  THREE.Mesh.call(this, geometry, material)
 
-  this.frustumCulled = false;
-};
+  this.frustumCulled = false
+}
 
 THREE.InfiniteGridHelper.prototype = {
   ...THREE.Mesh.prototype,
   ...THREE.Object3D.prototype,
-  ...THREE.EventDispatcher.prototype,
-};
+  ...THREE.EventDispatcher.prototype
+}
 
 class InfiniteGridHelper extends THREE.Mesh {
-  constructor(size1, size2, color, distance, axes = "xzy") {
-    color = color || new THREE.Color("black");
-    size1 = size1 || 1;
-    size2 = size2 || 10;
+  constructor(size1, size2, color, distance, axes = 'xzy') {
+    color = color || new THREE.Color('black')
+    size1 = size1 || 1
+    size2 = size2 || 10
 
-    distance = distance || 100;
+    distance = distance || 100
 
-    const planeAxes = axes.substr(0, 2);
+    const planeAxes = axes.substr(0, 2)
 
-    const geometry = new THREE.PlaneBufferGeometry(2, 2, 1, 1);
+    const geometry = new THREE.PlaneBufferGeometry(2, 2, 1, 1)
 
     const material = new THREE.ShaderMaterial({
       side: THREE.DoubleSide,
 
       uniforms: {
         uSize1: {
-          value: size1,
+          value: size1
         },
         uSize2: {
-          value: size2,
+          value: size2
         },
         uColor: {
-          value: color,
+          value: color
         },
         uDistance: {
-          value: distance,
-        },
+          value: distance
+        }
       },
       transparent: true,
       vertexShader: `
@@ -201,16 +201,16 @@ class InfiniteGridHelper extends THREE.Mesh {
           `,
 
       extensions: {
-        derivatives: true,
-      },
-    });
+        derivatives: true
+      }
+    })
 
-    super(geometry, material);
+    super(geometry, material)
 
-    this.frustumCulled = false;
+    this.frustumCulled = false
   }
 }
 
-Object.assign(InfiniteGridHelper.prototype, THREE.InfiniteGridHelper.prototype);
+Object.assign(InfiniteGridHelper.prototype, THREE.InfiniteGridHelper.prototype)
 
-THREE.InfiniteGridHelper = InfiniteGridHelper;
+THREE.InfiniteGridHelper = InfiniteGridHelper
